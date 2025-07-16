@@ -6,17 +6,36 @@ import { ProductList } from "../models/productList.models.js";
 const filterByCategory = asyncHandler(async (req, res) => {
   try {
     const { categories } = req.body;
-
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+    // Validate category input
     if (!categories || !Array.isArray(categories) || categories.length === 0) {
       throw new ApiError(400, "Category is not provided");
     }
-    const products = await ProductList.find({
-      item_type: { $in: categories },
-    });
 
-    res
-      .status(200)
-      .json(new ApiResponse(200, "Filter Product By Category", products));
+    // Create the filter
+    const filterQuery = {
+      item_type: { $in: categories },
+    };
+
+    // Fetch products with pagination
+    const products = await ProductList.find(filterQuery)
+      .skip(skip)
+      .limit(limit)
+      .select("-__v");
+
+    // Count total matching products
+    const totalFiltered = await ProductList.countDocuments(filterQuery);
+    // Send paginated and filtered response
+    return res.status(200).json(
+      new ApiResponse(200, "Filtered Products Fetched Successfully", {
+        totalProducts: totalFiltered,
+        currentPage: page,
+        totalPages: Math.ceil(totalFiltered / limit),
+        products: products,
+      })
+    );
   } catch (error) {
     console.log("Error to filtering the products by Category", error.message);
     throw new ApiError(500, "Failed to Filtering the Product by Category");
