@@ -30,6 +30,20 @@ const getProductList = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed to fetch list of products");
   }
 });
+const getProductsWithOutPageLimit = asyncHandler(async (req, res) => {
+  try {
+    const product = await ProductList.find({});
+
+    return res.status(200).json(
+      new ApiResponse(200, "Product list fetched successfully", {
+        products: product,
+      })
+    );
+  } catch (err) {
+    console.log("Error fetching product list:", err.message);
+    throw new ApiError(500, "Failed to fetch list of products");
+  }
+});
 
 const getProductById = asyncHandler(async (req, res) => {
   try {
@@ -139,4 +153,9 @@ const addProduct = asyncHandler(async (req, res) => {
   }
 });
 
-export { getProductById, getProductList, addProduct };
+export {
+  getProductById,
+  getProductList,
+  addProduct,
+  getProductsWithOutPageLimit,
+};
