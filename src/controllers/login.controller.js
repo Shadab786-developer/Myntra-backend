@@ -276,10 +276,10 @@ const register = asyncHandler(async (req, res) => {
       "Verify your email",
       `<div style="max-width:400px; margin:0 auto;padding:28px 20px; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.08); font-family:'Segoe UI',Arial,sans-serif;">
   <div style="text-align:center;">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDbzpE2oQZB9Wmio6e_wnjbj1p4MNiTGCBLQ&s" alt="Myntra" style="height:300px; width:300px; margin-bottom:8px;">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDbzpE2oQZB9Wmio6e_wnjbj1p4MNiTGCBLQ&s" alt="CMS" style="height:300px; width:300px; margin-bottom:8px;">
     <h2 style="color:#0b751bff; margin-bottom:8px;">Verify Your Email</h2>
     <p style="color:#333; font-size:16px; margin-bottom:24px;">
-      Thank you for signing up with Myntra!<br>
+      Thank you for signing up with E. R. Rao!<br>
       Please use the code below to verify your email address.
     </p>
     <div style="display:inline-block; background:#fff; color:#0b751bff; font-size:28px; letter-spacing:6px; border:1px solid #0b751bff; padding:12px 32px; border-radius:6px; font-weight:bold; margin-bottom:24px;">
@@ -287,7 +287,7 @@ const register = asyncHandler(async (req, res) => {
     </div>
     <p style="color:#555; font-size:14px; margin-top:24px;">
       Didn’t request this? Please ignore this email.<br>
-      <b style="color:blue;">Need help?</b> Contact <a href="mailto:support@college.com" style="color:#0b751bff; text-decoration:none;">support@myntra.com</a>
+      <b style="color:blue;">Need help?</b> Contact <a href="mailto:support@college.com" style="color:#0b751bff; text-decoration:none;">himanchalbareth8305@gmail.com</a>
     </p>
   </div>
 </div>`
@@ -397,7 +397,7 @@ const registerLogin = asyncHandler(async (req, res) => {
 const registerLogout = asyncHandler(async (req, res) => {
   const { _id } = req.body;
 
-  await Registration.findByIdAndUpdate(
+  const updateUser = await Registration.findByIdAndUpdate(
     _id,
     {
       $set: {
@@ -423,7 +423,13 @@ const registerLogout = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", "", options) // Clear the access token cookie
     .cookie("refreshToken", "", options) // Clear the refresh token cookie
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        { user: { _id: updateUser._id, isVerified: updateUser.isVerified } },
+        "User logged out successfully"
+      )
+    );
 });
 
 export {
